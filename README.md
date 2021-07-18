@@ -1,16 +1,13 @@
-# corona_rvalue_maps
+# Corona Info App
 
-A new Flutter project.
+## Demo:
+<img src="footage/demo.gif" width="200"/>
 
-## Getting Started
+## Installation
+**Die App nutzt die Google Cloud API und muss deshalb vor dem Ausführen über gültige API Keys verfügen. Aus diesem Grund kann keine fertige APK oder ähnliches zur Verfügung gestellt werden. Die folgende Anleitung beschreibt, wie das Projekt gestartet werden kann.**
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Voraussetzungen:
+- git
+- [Flutter](https://flutter.dev/docs/get-started/install)
+- [Android Studio](https://developer.android.com/studio/install) mit Android Emulator (Android API Version >= 20; getestet mit Android 9 und 10)
+- [VS Code](https://code.visualstudio.com/download) und [Flutter Plugin](https://flutter.dev/docs/get-started/editor?tab=vscode)
