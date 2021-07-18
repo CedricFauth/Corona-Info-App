@@ -1,7 +1,7 @@
 # <img src="footage/logo.png" width="20"/> Corona Info App
 
 
-## Demo:
+## Demo
 <img src="footage/i1.png" width="200"/> <img src="footage/i2.png" width="200"/> <img src="footage/demo.gif" width="200"/>
 
 ## Installation
