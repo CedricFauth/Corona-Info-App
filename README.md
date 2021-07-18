@@ -29,6 +29,7 @@ lib/main.dart:12:
 ```dart
 const APIKEY = "abc...";
 ```
+**Es ist normal, wenn VS Code viele Probleme im Code anzeigt - diese werden alle behoben, sobald im letzen Schritt alle benötigten Anhängigkeiten installiert wurden.**
 
 android/app/src/main/AndroidManifest.xml:15
 ```xml
