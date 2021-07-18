@@ -11,3 +11,9 @@
 - [Flutter](https://flutter.dev/docs/get-started/install)
 - [Android Studio](https://developer.android.com/studio/install) mit Android Emulator (Android API Version >= 20; getestet mit Android 9 und 10)
 - [VS Code](https://code.visualstudio.com/download) und [Flutter Plugin](https://flutter.dev/docs/get-started/editor?tab=vscode)
+- Google Cloud Account
+  - MAPS SDK for Android aktivieren
+  - Geocoding API aktivieren
+  - API Key erstellen
+
+### Starten
