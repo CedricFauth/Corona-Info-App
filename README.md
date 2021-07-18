@@ -7,7 +7,7 @@
 ## Installation
 **Die App nutzt die Google Cloud API und muss deshalb vor dem Ausführen über gültige API Keys verfügen. Aus diesem Grund kann keine fertige APK oder ähnliches zur Verfügung gestellt werden. Die folgende Anleitung beschreibt, wie das Projekt gestartet werden kann.**
 
-### Voraussetzungen:
+### Voraussetzungen
 - [git](https://git-scm.com/downloads)
 - [Flutter](https://flutter.dev/docs/get-started/install)
 - [Android Studio](https://developer.android.com/studio/install) mit Android Emulator (Android API Version >= 20; getestet mit Android 9 und 10)
