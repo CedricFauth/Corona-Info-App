@@ -37,4 +37,10 @@ android/app/src/main/AndroidManifest.xml:15
   android:value="abc..."/>
 ```
 
-In VS Code den richtigen Emulator auswählen und mit ```flutter run``` die App starten.
+In VS Code den richtigen Emulator auswählen und die App starten: 
+```
+flutter run
+```
+
+APKs können ebenfalls erstellt werden:
+https://flutter.dev/docs/deployment/android
