@@ -8,13 +8,25 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
-
+// insert you gcloud api key here and in android manifest
 const APIKEY = "<YOUR-GCLOUD-API-KEY>";
+
+/*
+ Location class; contains covid data for a location
+ */
+class Loc {
+  String place;
+  double weekIncidence;
+  int cases, deaths, casesPerWeek, deathsPerWeek, recovered, population;
+
+  Loc({this.place, this.weekIncidence, this.cases, this.deaths, this.casesPerWeek, this.deathsPerWeek, this.recovered, this.population});
+}
 
 void main() {
   runApp(MyApp());
 }
 
+// initial widget
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -29,33 +41,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Widget that contains current location and home page
 class MyHomePage extends StatefulWidget {
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class Loc {
-  String place;
-  double weekIncidence;
-  int cases, deaths, casesPerWeek, deathsPerWeek, recovered, population;
-
-  Loc({this.place, this.weekIncidence, this.cases, this.deaths, this.casesPerWeek, this.deathsPerWeek, this.recovered, this.population});
-}
-
 class _MyHomePageState extends State<MyHomePage> {
 
+  // current location state
   Loc _location = new Loc();
 
+  // method updates map and data, when location changes
   changeLocation(newLocation) {
       setState(() {
         _location = newLocation;
@@ -64,12 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -85,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               background: MapWidget(callback: changeLocation,),
             ),
           ),
+          // showing covid data in a list
           SliverList(
             delegate: SliverChildListDelegate([ //equivalent to Listview
               ListElement(head: "Landkreis", text: _location.place,),
@@ -114,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
+// This Widget represents the map on top of the page
 class MapWidget extends StatefulWidget {
   final Function(Loc) callback;
 
@@ -131,6 +124,7 @@ class MapWidgetState extends State<MapWidget> {
 
   LatLng _initialcameraposition = LatLng(37.42796133580664, -122.085749655962);
 
+  // update map camera, after map gets created
   void _onMapCreated(GoogleMapController _cntlr) {
     _location.onLocationChanged.listen((l) {
       _cntlr.animateCamera(
@@ -141,37 +135,46 @@ class MapWidgetState extends State<MapWidget> {
     });
   }
 
+  // method for receiving the current location of the user
   getLoc() async{
     bool serviceEnabled;
     PermissionStatus permissionGranted;
 
+    // checking if location service is enabled
     serviceEnabled = await _location.serviceEnabled();
     if (!serviceEnabled) {
+      // asks user to enable location service
       serviceEnabled = await _location.requestService();
       if (!serviceEnabled) {
         return;
       }
     }
 
+    // checks if app has location permissions
     permissionGranted = await _location.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
+      // asks user to grant location permission
       permissionGranted = await _location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
 
+    // calling location api
     _currentPosition = await _location.getLocation();
     _initialcameraposition = LatLng(_currentPosition.latitude,_currentPosition.longitude);
     
+    // getting an location object with covid data
     Loc l = await getPlace(_currentPosition.latitude, _currentPosition.longitude);
     if (l != null) print(l.toString());
     this.widget.callback(l);
 
-    /*location.onLocationChanged.listen((LocationData currentLocation) async {
+    /*
+    _location.onLocationChanged.listen((LocationData currentLocation) async {
       print("${currentLocation.latitude} : ${currentLocation.longitude}");
-      Placemark a = await _getPlacemark(currentLocation.latitude, currentLocation.longitude);
-      if (a != null) print(a.toString());
+      Loc l = await getPlace(_currentPosition.latitude, _currentPosition.longitude);
+      if (l != null) print(l.toString());
+      this.widget.callback(l);
       setState(() {
         _currentPosition = currentLocation;
         _initialcameraposition = LatLng(_currentPosition.latitude,_currentPosition.longitude);
@@ -179,11 +182,12 @@ class MapWidgetState extends State<MapWidget> {
     });*/
   }
 
+  // gets location containing covid data for a place
   Future<Loc> getPlace(double lat, double long) async {
     //var addresses = await placemarkFromCoordinates(lat, long);
     
     try {
-      // get landkreis
+      // get landkreis name from lat & lang coordinates
       http.Response res = await http.get(
         Uri.parse('https://maps.googleapis.com/maps/api/geocode/json\?latlng\=$lat,$long\&key\=$APIKEY\&result_type\=administrative_area_level_3\&language\=de')
       );
@@ -191,7 +195,7 @@ class MapWidgetState extends State<MapWidget> {
       String kreis = json['results'][0]['address_components'][0]['long_name'];
       print(kreis);
 
-      // get landkreis ID
+      // get landkreis ID from landkreis name
       res = await http.get(
         Uri.parse('https://api.faced.blog/landkreise/ags?name=$kreis')
       );
@@ -200,12 +204,14 @@ class MapWidgetState extends State<MapWidget> {
       String kreisID = json['ags'];
       print(kreisID);
 
+      // get covid stats from landkreis id
       res = await http.get(
         Uri.parse('https://api.corona-zahlen.org/districts/$kreisID')
       );
       json = jsonDecode(res.body);
       Map<String, dynamic> coronaData = json['data'][kreisID];
       print(coronaData);
+      // generating new location data
       return Loc(
         place: kreis,
         weekIncidence: coronaData['weekIncidence'],
@@ -221,11 +227,6 @@ class MapWidgetState extends State<MapWidget> {
       return Loc(place: 'Could not find location');
     }
 
-    /*Loc l = new Loc(
-      place: locality,
-      lat: _currentPosition.latitude, 
-      long: _currentPosition.longitude,
-    );*/
   }
 
   @override
@@ -234,6 +235,7 @@ class MapWidgetState extends State<MapWidget> {
     getLoc();
   }
 
+  // showing map
   @override
   Widget build(BuildContext context) {
     return new GoogleMap(
@@ -254,6 +256,7 @@ class MapWidgetState extends State<MapWidget> {
 
 }
 
+// this Widget represents one entry with covid data
 class ListElement extends StatelessWidget {
   final dynamic text;
   final String head;
